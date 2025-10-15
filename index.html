@@ -41,6 +41,17 @@
       /* Responsive images inside cards */
       .card-img-top { width: 100%; height: auto; object-fit: cover; border-top-left-radius: inherit; border-top-right-radius: inherit; }
 
+      /* Flip card (Uiverse-inspired) */
+      .flip-card { background-color: transparent; width: 100%; height: 220px; perspective: 1000px; }
+      @media (min-width: 768px) { .flip-card { height: 260px; } }
+      .flip-card .title { font-size: 1.2rem; font-weight: 800; text-align: center; margin: 0; }
+      .flip-card-inner { position: relative; width: 100%; height: 100%; text-align: center; transition: transform 0.8s; transform-style: preserve-3d; }
+      .flip-card:hover .flip-card-inner { transform: rotateY(180deg); }
+      .flip-card-front, .flip-card-back { box-shadow: 0 8px 14px 0 rgba(0,0,0,0.12); position: absolute; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: .5rem; width: 100%; height: 100%; -webkit-backface-visibility: hidden; backface-visibility: hidden; border: 1px solid coral; border-radius: 1rem; padding: 1rem; }
+      .flip-card-front { background: linear-gradient(120deg, bisque 60%, rgb(255, 231, 222) 88%, rgb(255, 211, 195) 40%, rgba(255, 127, 80, 0.603) 48%); color: coral; }
+      .flip-card-back { background: linear-gradient(120deg, rgb(255, 174, 145) 30%, coral 88%, bisque 40%, rgb(255, 185, 160) 78%); color: #fff; transform: rotateY(180deg); }
+      .flip-card .recipe-ingredients { max-width: 90%; margin: 0 auto; }
+
       /* Mobile-first responsiveness */
       @media (max-width: 576px) {
         body { background: linear-gradient(180deg, #f6f9ff 0%, #ffffff 100%) fixed; }
@@ -98,7 +109,7 @@
                   <label class="btn btn-outline-secondary mb-0"><i class="fa-solid fa-file-import me-1"></i>Import <input id="importFile" type="file" accept="application/json" hidden></label>
                 </div>
                 <div id="recipesEmpty" class="text-muted small d-none">No recipes yet. Click New to add one.</div>
-                <div id="recipeList" class="list-group list-group-flush"></div>
+                <div id="recipeList" class="row g-3 g-md-4"></div>
               </div>
 
               <div class="tab-pane fade" id="tab-editor" role="tabpanel">
@@ -186,14 +197,26 @@
     </template>
 
     <template id="recipeItemTpl">
-      <button class="list-group-item list-group-item-action d-flex align-items-start gap-3 rounded-4 shadow-sm hover-lift p-3">
-        <input type="checkbox" class="form-check-input mt-1 recipe-all-have" title="All ingredients available">
-        <div class="flex-fill text-start">
-          <div class="fw-semibold recipe-title"></div>
-          <div class="small text-muted recipe-ingredients"></div>
+      <div class="col-12 col-sm-6 col-lg-4">
+        <div class="flip-card">
+          <div class="flip-card-inner">
+            <div class="flip-card-front">
+              <p class="title recipe-title"></p>
+              <p class="small text-muted recipe-ingredients"></p>
+              <span class="badge bg-secondary recipe-count"></span>
+            </div>
+            <div class="flip-card-back">
+              <p class="title mb-1">Details</p>
+              <p class="mb-2"><span class="badge bg-light text-dark recipe-count"></span></p>
+              <button type="button" class="btn btn-light btn-sm open-editor">Open</button>
+              <div class="form-check mt-2">
+                <input class="form-check-input recipe-all-have" type="checkbox" id="allHaveTpl">
+                <label class="form-check-label" for="allHaveTpl">Mark all have</label>
+              </div>
+            </div>
+          </div>
         </div>
-        <span class="badge bg-secondary recipe-count"></span>
-      </button>
+      </div>
     </template>
 
     <template id="pantryPillTpl">
@@ -564,25 +587,29 @@ const DEFAULT_RECIPES = [
       // Recipes list & search
       let currentFilter = '';
       function recipeItem(recipe){
-        const el = els.itemTpl.content.firstElementChild.cloneNode(true);
-        el.dataset.id = recipe.id;
-        $('.recipe-title', el).textContent = recipe.title;
+        const col = els.itemTpl.content.firstElementChild.cloneNode(true);
+        col.dataset.id = recipe.id;
+        const front = $('.flip-card-front', col);
+        $('.recipe-title', col).textContent = recipe.title;
         const haveCount = (recipe.ingredients||[]).filter(i=>i.have).length;
         const total = recipe.ingredients?.length || 0;
-        $('.recipe-count', el).textContent = `${haveCount}/${total}`;
-        $('.recipe-ingredients', el).textContent = (recipe.ingredients||[]).map(i=>`${i.qty||''}${i.unit?(' '+i.unit):''} ${i.name}`).join(', ');
-        $('.recipe-all-have', el).checked = total>0 && haveCount===total;
-        el.addEventListener('click', async (e)=>{
-          if(e.target.classList.contains('recipe-all-have')){
+        col.querySelectorAll('.recipe-count').forEach(b=> b.textContent = `${haveCount}/${total}`);
+        $('.recipe-ingredients', col).textContent = (recipe.ingredients||[]).map(i=>`${i.qty||''}${i.unit?(' '+i.unit):''} ${i.name}`).join(', ');
+        const allHaveEl = $('.recipe-all-have', col);
+        if(allHaveEl){
+          allHaveEl.checked = total>0 && haveCount===total;
+          allHaveEl.addEventListener('click', async (e)=>{
             e.stopPropagation();
             const updated = { ...recipe };
             updated.ingredients = (updated.ingredients||[]).map(ing=>({ ...ing, have: e.target.checked }));
-            try{ await Recipes.put(updated); renderList(); renderSuggestions(); }catch(err){ showToast('Update failed','danger'); }
-            return;
-          }
-          openEditor(recipe.id);
-        });
-        return el;
+            try{ await Recipes.put(updated); renderList(); renderSuggestions(); }
+            catch(err){ showToast('Update failed','danger'); }
+          });
+        }
+        const openBtn = $('.open-editor', col);
+        if(openBtn){ openBtn.addEventListener('click', ()=> openEditor(recipe.id)); }
+        if(front){ front.addEventListener('click', ()=> openEditor(recipe.id)); }
+        return col;
       }
       async function renderList(){
         try{

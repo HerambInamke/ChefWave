@@ -705,7 +705,12 @@
       // Init
       document.addEventListener('DOMContentLoaded', async ()=>{
         try{
-          if (typeof indexedDB !== 'undefined') { try{ await openDb(); }catch(e){ console.error('DB open failed', e); } }
+          if (typeof indexedDB !== 'undefined') {
+            try{ await openDb(); }
+            catch(e){ console.error('DB open failed', e); enableFallback(); }
+          } else {
+            enableFallback();
+          }
           await seedPantryIfEmpty();
           await renderPantry();
           await renderList();

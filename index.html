@@ -23,6 +23,24 @@
       .mixer-channel { border: 1px dashed rgba(0,0,0,0.12); border-radius: .75rem; padding: .75rem; }
       .toast-container { position: fixed; right: 1rem; bottom: 1rem; z-index: 1080; }
 
+      /* Modern mobile-first typography and motion */
+      html { scroll-behavior: smooth; }
+      body { font-size: clamp(0.95rem, 0.5vw + 0.9rem, 1.05rem); line-height: 1.6; }
+      h1, .h1 { font-size: clamp(1.6rem, 1.2vw + 1.3rem, 2.2rem); }
+      h2, .h2 { font-size: clamp(1.4rem, 1vw + 1.1rem, 1.9rem); }
+      h3, .h3 { font-size: clamp(1.2rem, 0.8vw + 1rem, 1.6rem); }
+
+      /* Card polish: rounded corners, subtle shadow, hover lift */
+      .rounded-4 { border-radius: 12px !important; }
+      .hover-lift { transition: transform .18s ease, box-shadow .18s ease; }
+      .hover-lift:hover { transform: translateY(-2px); box-shadow: 0 10px 26px rgba(13,110,253,.12); }
+      .shadow-soft { box-shadow: 0 6px 18px rgba(0,0,0,0.06); }
+      .card .card-body { padding: 1rem; }
+      @media (min-width: 576px) { .card .card-body { padding: 1.25rem; } }
+
+      /* Responsive images inside cards */
+      .card-img-top { width: 100%; height: auto; object-fit: cover; border-top-left-radius: inherit; border-top-right-radius: inherit; }
+
       /* Mobile-first responsiveness */
       @media (max-width: 576px) {
         body { background: linear-gradient(180deg, #f6f9ff 0%, #ffffff 100%) fixed; }
@@ -63,7 +81,7 @@
     <main class="container py-4">
       <div class="row g-4">
         <div class="col-12 col-xl-6">
-          <div class="card glass h-100">
+          <div class="card glass h-100 shadow-sm rounded-4 hover-lift">
             <div class="card-header">
               <ul class="nav nav-tabs card-header-tabs" role="tablist">
                 <li class="nav-item"><button id="recipes-tab" class="nav-link active" data-bs-toggle="tab" data-bs-target="#tab-recipes" type="button" role="tab"><i class="fa-solid fa-book me-1"></i>Recipes</button></li>
@@ -118,7 +136,7 @@
         </div>
 
         <div class="col-12 col-xl-6">
-          <div class="card glass h-100">
+          <div class="card glass h-100 shadow-sm rounded-4 hover-lift">
             <div class="card-header d-flex align-items-center justify-content-between">
               <div class="d-flex align-items-center gap-2"><i class="fa-solid fa-seedling text-success"></i><span class="fw-semibold">Pantry & Mixer</span></div>
               <div class="d-flex align-items-center gap-2">
@@ -168,7 +186,7 @@
     </template>
 
     <template id="recipeItemTpl">
-      <button class="list-group-item list-group-item-action d-flex align-items-start gap-3">
+      <button class="list-group-item list-group-item-action d-flex align-items-start gap-3 rounded-4 shadow-sm hover-lift p-3">
         <input type="checkbox" class="form-check-input mt-1 recipe-all-have" title="All ingredients available">
         <div class="flex-fill text-start">
           <div class="fw-semibold recipe-title"></div>
@@ -380,51 +398,79 @@
       };
 
       // Seed fake pantry data if empty
-      const DEFAULT_PANTRY = ['Salt','Black Pepper','Olive Oil','Garlic','Onion','Eggs','All-purpose Flour','Sugar','Butter','Milk','Tomatoes','Chicken Breast','Rice','Pasta','Basil'];
-      const DEFAULT_RECIPES = [
-        {
-          title: 'Garlic Butter Pasta',
-          steps: 'Cook pasta until al dente. Melt butter with minced garlic. Toss pasta with garlic butter, a splash of pasta water, and black pepper. Finish with parsley.',
-          ingredients: [
-            { name: 'Pasta', qty: '250', unit: 'g', have: false },
-            { name: 'Butter', qty: '2', unit: 'tbsp', have: false },
-            { name: 'Garlic', qty: '3', unit: 'cloves', have: false },
-            { name: 'Black Pepper', qty: '1/2', unit: 'tsp', have: false }
-          ]
-        },
-        {
-          title: 'Tomato Basil Omelette',
-          steps: 'Beat eggs with salt. Cook in butter, add diced tomatoes and torn basil, fold and finish.',
-          ingredients: [
-            { name: 'Eggs', qty: '3', unit: 'pieces', have: false },
-            { name: 'Butter', qty: '1', unit: 'tbsp', have: false },
-            { name: 'Tomatoes', qty: '1', unit: 'medium', have: false },
-            { name: 'Basil', qty: '5', unit: 'leaves', have: false }
-          ]
-        },
-        {
-          title: 'Simple Fried Rice',
-          steps: 'Sauté garlic and onions. Add rice, soy sauce, and scrambled egg; stir-fry until hot.',
-          ingredients: [
-            { name: 'Rice', qty: '2', unit: 'cups (cooked)', have: false },
-            { name: 'Garlic', qty: '2', unit: 'cloves', have: false },
-            { name: 'Onion', qty: '1/2', unit: 'piece', have: false },
-            { name: 'Eggs', qty: '1', unit: 'piece', have: false },
-            { name: 'Soy Sauce', qty: '1', unit: 'tbsp', have: false }
-          ]
-        },
-        {
-          title: 'Herbed Chicken',
-          steps: 'Season chicken with salt, pepper, and basil. Pan-sear in olive oil until cooked.',
-          ingredients: [
-            { name: 'Chicken Breast', qty: '400', unit: 'g', have: false },
-            { name: 'Olive Oil', qty: '1', unit: 'tbsp', have: false },
-            { name: 'Salt', qty: '1/2', unit: 'tsp', have: false },
-            { name: 'Black Pepper', qty: '1/4', unit: 'tsp', have: false },
-            { name: 'Basil', qty: '1', unit: 'tsp (dried)', have: false }
-          ]
-        }
-      ];
+     // Seed pantry data from add_recipe.json
+const DEFAULT_PANTRY = [
+  'all-purpose flour',
+  'granulated sugar',
+  'eggs',
+  'whole milk',
+  'olive oil',
+  'garlic',
+  'onion',
+  'spaghetti',
+  'chicken breast',
+  'soy sauce',
+  'red pepper flakes',
+  'parsley',
+  'salt',
+  'broccoli',
+  'carrot',
+  'baking powder',
+  'butter',
+  'black pepper'
+];
+
+const DEFAULT_RECIPES = [
+  {
+    title: 'Spaghetti Aglio e Olio',
+    steps: 'Cook spaghetti in salted boiling water until al dente.\nGently sauté sliced garlic in olive oil until fragrant (do not brown).\nAdd red pepper flakes, then toss pasta with the oil and a splash of pasta water.\nFinish with chopped parsley and adjust salt to taste.',
+    ingredients: [
+      { name: 'spaghetti', qty: '400', unit: 'g', have: false },
+      { name: 'olive oil', qty: '80', unit: 'ml', have: false },
+      { name: 'garlic', qty: '6', unit: 'cloves', have: false },
+      { name: 'red pepper flakes', qty: '1', unit: 'tsp', have: false },
+      { name: 'parsley', qty: '10', unit: 'g', have: false },
+      { name: 'salt', qty: '1', unit: 'tsp', have: false }
+    ]
+  },
+  {
+    title: 'Chicken and Veggie Stir-Fry',
+    steps: 'Slice chicken thinly; marinate in half the soy sauce with minced garlic for 10 minutes.\nStir-fry chicken in hot oil until just cooked; remove and set aside.\nStir-fry vegetables until crisp-tender; return chicken and add remaining soy sauce.\nToss to coat and serve over rice.',
+    ingredients: [
+      { name: 'chicken breast', qty: '500', unit: 'g', have: false },
+      { name: 'soy sauce', qty: '60', unit: 'ml', have: false },
+      { name: 'garlic', qty: '3', unit: 'cloves', have: false },
+      { name: 'onion', qty: '1', unit: 'piece', have: false },
+      { name: 'broccoli', qty: '200', unit: 'g', have: false },
+      { name: 'carrot', qty: '150', unit: 'g', have: false },
+      { name: 'olive oil', qty: '2', unit: 'tbsp', have: false }
+    ]
+  },
+  {
+    title: 'Fluffy Pancakes',
+    steps: 'Whisk dry ingredients together in a bowl.\nMix milk, egg, and melted butter; combine with dry ingredients until just mixed.\nCook 1/4-cup portions on a greased skillet until bubbles form; flip and cook until golden.\nServe warm with syrup or fruit.',
+    ingredients: [
+      { name: 'all-purpose flour', qty: '200', unit: 'g', have: false },
+      { name: 'granulated sugar', qty: '2', unit: 'tbsp', have: false },
+      { name: 'baking powder', qty: '2', unit: 'tsp', have: false },
+      { name: 'salt', qty: '0.5', unit: 'tsp', have: false },
+      { name: 'eggs', qty: '1', unit: 'piece', have: false },
+      { name: 'whole milk', qty: '240', unit: 'ml', have: false },
+      { name: 'butter (melted)', qty: '2', unit: 'tbsp', have: false }
+    ]
+  },
+  {
+    title: 'Simple Omelette',
+    steps: 'Beat eggs with salt and pepper.\nSauté finely chopped onion in butter until translucent.\nPour eggs into pan, cook until almost set, fold and finish cooking.\nServe immediately.',
+    ingredients: [
+      { name: 'eggs', qty: '3', unit: 'pieces', have: false },
+      { name: 'butter', qty: '1', unit: 'tbsp', have: false },
+      { name: 'onion', qty: '0.25', unit: 'piece', have: false },
+      { name: 'salt', qty: '0.25', unit: 'tsp', have: false },
+      { name: 'black pepper', qty: '0.25', unit: 'tsp', have: false }
+    ]
+  }
+];
       async function seedPantryIfEmpty(){
         try{
           const items = await Pantry.list();

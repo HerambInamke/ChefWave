@@ -252,8 +252,13 @@
           try{
             const tx = db.transaction(store, mode);
             const s = tx.objectStore(store);
-            const result = fn(s);
-            tx.oncomplete = () => resolve(result);
+            const out = fn(s);
+            if (out && typeof out === 'object' && 'onsuccess' in out) {
+              out.onsuccess = () => resolve(out.result);
+              out.onerror = () => reject(out.error);
+            } else {
+              resolve(out);
+            }
             tx.onerror = () => reject(tx.error);
             tx.onabort = () => reject(tx.error);
           }catch(err){ reject(err); }

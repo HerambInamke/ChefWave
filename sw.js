@@ -1,11 +1,11 @@
-const CACHE_NAME = 'chefwave-cache-v1';
+const CACHE_NAME = 'chefwave-cache-v2';
 const APP_SHELL = [
   './',
   './index.html',
   './assets/css/styles.css',
-  './assets/js/app.js',
-  './assets/js/db.js',
   './assets/manifest.webmanifest',
+  './assets/icons/icon-192.png',
+  './assets/icons/icon-512.png',
   './assets/icons/icon.svg',
   // Bootstrap from CDN (cached runtime below as well)
 ];

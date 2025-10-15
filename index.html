@@ -66,9 +66,9 @@
           <div class="card glass h-100">
             <div class="card-header">
               <ul class="nav nav-tabs card-header-tabs" role="tablist">
-                <li class="nav-item"><button class="nav-link active" data-bs-toggle="tab" data-bs-target="#tab-recipes" type="button" role="tab"><i class="fa-solid fa-book me-1"></i>Recipes</button></li>
-                <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-editor" type="button" role="tab"><i class="fa-solid fa-pen me-1"></i>Editor</button></li>
-                <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-suggest" type="button" role="tab"><i class="fa-solid fa-wand-magic-sparkles me-1"></i>Suggest</button></li>
+                <li class="nav-item"><button id="recipes-tab" class="nav-link active" data-bs-toggle="tab" data-bs-target="#tab-recipes" type="button" role="tab"><i class="fa-solid fa-book me-1"></i>Recipes</button></li>
+                <li class="nav-item"><button id="editor-tab" class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-editor" type="button" role="tab"><i class="fa-solid fa-pen me-1"></i>Editor</button></li>
+                <li class="nav-item"><button id="suggest-tab" class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-suggest" type="button" role="tab"><i class="fa-solid fa-wand-magic-sparkles me-1"></i>Suggest</button></li>
               </ul>
             </div>
             <div class="card-body tab-content">
@@ -514,7 +514,7 @@
           els.ingredients.innerHTML = '';
           (r.ingredients||[]).forEach(ing=>els.ingredients.appendChild(makeIngredientRow(ing)));
           els.btnDelete.classList.toggle('d-none', !r.id);
-          new bootstrap.Tab($('[data-bs-target="#tab-editor"]')).show();
+          new bootstrap.Tab($('#editor-tab')).show();
         }catch(e){ showToast('Failed to open editor','danger'); }
       }
       function clearEditor(){ els.formId.value=''; els.title.value=''; els.steps.value=''; els.ingredients.innerHTML=''; }
@@ -526,12 +526,12 @@
         e.preventDefault();
         const payload = { id: els.formId.value?Number(els.formId.value):undefined, title: els.title.value.trim(), steps: els.steps.value.trim(), ingredients: collectIngredients() };
         if(!payload.title) return;
-        try{ if(payload.id) await Recipes.put(payload); else await Recipes.add(payload); clearEditor(); new bootstrap.Tab($('[data-bs-target="#tab-recipes"]')).show(); renderList(); renderSuggestions(); showToast('Saved','success'); }
+        try{ if(payload.id) await Recipes.put(payload); else await Recipes.add(payload); clearEditor(); new bootstrap.Tab($('#recipes-tab')).show(); renderList(); renderSuggestions(); showToast('Saved','success'); }
         catch(err){ showToast('Save failed','danger'); }
       });
       els.btnDelete.addEventListener('click', async ()=>{
         const id = Number(els.formId.value); if(!id) return;
-        try{ await Recipes.del(id); clearEditor(); new bootstrap.Tab($('[data-bs-target="#tab-recipes"]')).show(); renderList(); renderSuggestions(); showToast('Deleted','secondary'); }
+        try{ await Recipes.del(id); clearEditor(); new bootstrap.Tab($('#recipes-tab')).show(); renderList(); renderSuggestions(); showToast('Deleted','secondary'); }
         catch(err){ showToast('Delete failed','danger'); }
       });
 

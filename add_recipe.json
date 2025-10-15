@@ -1,0 +1,89 @@
+{
+  "pantry": {
+    "ingredients": [
+      { "name": "all-purpose flour", "quantity": 2, "unit": "kg" },
+      { "name": "granulated sugar", "quantity": 1, "unit": "kg" },
+      { "name": "eggs", "quantity": 12, "unit": "pieces" },
+      { "name": "whole milk", "quantity": 2, "unit": "liter" },
+      { "name": "olive oil", "quantity": 0.75, "unit": "liter" },
+      { "name": "garlic", "quantity": 3, "unit": "bulbs" },
+      { "name": "onion", "quantity": 5, "unit": "pieces" },
+      { "name": "spaghetti", "quantity": 1, "unit": "kg" },
+      { "name": "chicken breast", "quantity": 1, "unit": "kg" },
+      { "name": "soy sauce", "quantity": 300, "unit": "ml" }
+    ]
+  },
+  "recipes": [
+    {
+      "name": "Spaghetti Aglio e Olio",
+      "ingredients": [
+        { "name": "spaghetti", "quantity": 400, "unit": "g" },
+        { "name": "olive oil", "quantity": 80, "unit": "ml" },
+        { "name": "garlic", "quantity": 6, "unit": "cloves" },
+        { "name": "red pepper flakes", "quantity": 1, "unit": "tsp" },
+        { "name": "parsley", "quantity": 10, "unit": "g" },
+        { "name": "salt", "quantity": 1, "unit": "tsp" }
+      ],
+      "instructions": [
+        "Cook spaghetti in salted boiling water until al dente.",
+        "Gently sauté sliced garlic in olive oil until fragrant (do not brown).",
+        "Add red pepper flakes, then toss pasta with the oil and a splash of pasta water.",
+        "Finish with chopped parsley and adjust salt to taste."
+      ]
+    },
+    {
+      "name": "Chicken and Veggie Stir-Fry",
+      "ingredients": [
+        { "name": "chicken breast", "quantity": 500, "unit": "g" },
+        { "name": "soy sauce", "quantity": 60, "unit": "ml" },
+        { "name": "garlic", "quantity": 3, "unit": "cloves" },
+        { "name": "onion", "quantity": 1, "unit": "piece" },
+        { "name": "broccoli", "quantity": 200, "unit": "g" },
+        { "name": "carrot", "quantity": 150, "unit": "g" },
+        { "name": "olive oil", "quantity": 2, "unit": "tbsp" }
+      ],
+      "instructions": [
+        "Slice chicken thinly; marinate in half the soy sauce with minced garlic for 10 minutes.",
+        "Stir-fry chicken in hot oil until just cooked; remove and set aside.",
+        "Stir-fry vegetables until crisp-tender; return chicken and add remaining soy sauce.",
+        "Toss to coat and serve over rice."
+      ]
+    },
+    {
+      "name": "Fluffy Pancakes",
+      "ingredients": [
+        { "name": "all-purpose flour", "quantity": 200, "unit": "g" },
+        { "name": "granulated sugar", "quantity": 2, "unit": "tbsp" },
+        { "name": "baking powder", "quantity": 2, "unit": "tsp" },
+        { "name": "salt", "quantity": 0.5, "unit": "tsp" },
+        { "name": "eggs", "quantity": 1, "unit": "piece" },
+        { "name": "whole milk", "quantity": 240, "unit": "ml" },
+        { "name": "butter (melted)", "quantity": 2, "unit": "tbsp" }
+      ],
+      "instructions": [
+        "Whisk dry ingredients together in a bowl.",
+        "Mix milk, egg, and melted butter; combine with dry ingredients until just mixed.",
+        "Cook 1/4-cup portions on a greased skillet until bubbles form; flip and cook until golden.",
+        "Serve warm with syrup or fruit."
+      ]
+    },
+    {
+      "name": "Simple Omelette",
+      "ingredients": [
+        { "name": "eggs", "quantity": 3, "unit": "pieces" },
+        { "name": "butter", "quantity": 1, "unit": "tbsp" },
+        { "name": "onion", "quantity": 0.25, "unit": "piece" },
+        { "name": "salt", "quantity": 0.25, "unit": "tsp" },
+        { "name": "black pepper", "quantity": 0.25, "unit": "tsp" }
+      ],
+      "instructions": [
+        "Beat eggs with salt and pepper.",
+        "Sauté finely chopped onion in butter until translucent.",
+        "Pour eggs into pan, cook until almost set, fold and finish cooking.",
+        "Serve immediately."
+      ]
+    }
+  ]
+}
+
+

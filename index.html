@@ -4,54 +4,86 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="theme-color" content="#0d6efd">
-    <link rel="manifest" href="assets/manifest.webmanifest">
-    <link rel="icon" href="assets/icons/icon.svg" type="image/svg+xml">
-    <title>ChefWave — Recipes & Ambient Mixer</title>
-    <!-- Bootstrap 5 -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-    <link rel="stylesheet" href="assets/css/styles.css">
+    <title>ChefWave — Recipes • Pantry • Mixer</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet" crossorigin="anonymous">
+    <style>
+      :root { --glass-bg: rgba(255,255,255,0.6); --glass-br: 16px; --glass-blur: 10px; }
+      body { min-height: 100vh; background: radial-gradient(1200px 800px at 10% 10%, #e8f1ff, #ffffff) fixed; }
+      .glass { background: var(--glass-bg); border-radius: var(--glass-br); backdrop-filter: blur(var(--glass-blur)); border: 1px solid rgba(255,255,255,0.4); box-shadow: 0 10px 30px rgba(13,110,253,0.08); }
+      .navbar.glass { background: rgba(13,110,253,0.8)!important; backdrop-filter: blur(12px); }
+      .card { border: 0; }
+      .card-header { background: transparent; border-bottom: 1px solid rgba(0,0,0,0.06); }
+      .list-group-item { border: 1px solid rgba(0,0,0,0.05); }
+      .ingredient-row .form-control { min-width: 0; }
+      .ingredient-row .ingredient-name { flex: 2 1 auto; }
+      .drop-target { border: 2px dashed rgba(13,110,253,.35); border-radius: .5rem; padding: .5rem; }
+      .pill { display: inline-flex; align-items: center; gap:.5rem; padding: .35rem .6rem; border-radius: 999px; background: rgba(13,110,253,.08); border: 1px solid rgba(13,110,253,.15); }
+      .pill .fa-grip { cursor: grab; color:#0d6efd; }
+      .mixer-channel { border: 1px dashed rgba(0,0,0,0.12); border-radius: .75rem; padding: .75rem; }
+      .toast-container { position: fixed; right: 1rem; bottom: 1rem; z-index: 1080; }
+
+      /* Mobile-first responsiveness */
+      @media (max-width: 576px) {
+        body { background: linear-gradient(180deg, #f6f9ff 0%, #ffffff 100%) fixed; }
+        .container { padding-left: max(1rem, env(safe-area-inset-left)); padding-right: max(1rem, env(safe-area-inset-right)); }
+        .card-body { padding: .75rem; }
+        .card-header { padding: .5rem .75rem; }
+        .nav-tabs .nav-link { padding: .5rem .6rem; font-size: .925rem; }
+        .form-control, .btn, .input-group-text { font-size: 1rem; }
+        .list-group-item { padding: .75rem; }
+        .ingredient-row { gap: .5rem; flex-wrap: wrap; }
+        .ingredient-row .ingredient-qty, .ingredient-row .ingredient-unit { max-width: 46%; }
+        .mixer-channel { padding: .6rem; }
+        #mixerRows .row, #mixerRows { --bs-gutter-x: .5rem; }
+        .mobile-sticky-input { position: sticky; top: .25rem; z-index: 2; background: var(--glass-bg); backdrop-filter: blur(var(--glass-blur)); border-radius: .5rem; padding: .25rem; }
+        .mobile-sticky-actions { position: sticky; bottom: 0; z-index: 2; background: rgba(255,255,255,0.8); backdrop-filter: blur(8px); padding-top: .5rem; margin-top: .25rem; border-top: 1px solid rgba(0,0,0,0.06); }
+        .pill { padding: .45rem .7rem; }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        * { scroll-behavior: auto !important; animation: none !important; transition: none !important; }
+      }
+    </style>
   </head>
-  <body class="bg-light">
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm sticky-top">
+  <body>
+    <nav class="navbar navbar-expand-lg navbar-dark glass sticky-top">
       <div class="container-fluid">
         <span class="navbar-brand d-flex align-items-center gap-2">
-          <img src="assets/icons/icon.svg" alt="ChefWave" width="28" height="28">
+          <i class="fa-solid fa-bowl-food"></i>
           ChefWave
         </span>
-        <button id="btn-install" class="btn btn-outline-light btn-sm d-none">Install</button>
+        <div class="d-flex align-items-center gap-2">
+          <button id="btn-install" class="btn btn-outline-light btn-sm d-none"><i class="fa-solid fa-download me-1"></i>Install</button>
+          <button id="btn-offline" class="btn btn-outline-light btn-sm"><i class="fa-solid fa-bolt me-1"></i>Offline</button>
+        </div>
       </div>
     </nav>
 
     <main class="container py-4">
       <div class="row g-4">
-        <div class="col-12 col-lg-6">
-          <div class="card shadow-sm h-100">
-            <div class="card-header bg-white">
-              <ul class="nav nav-tabs card-header-tabs" id="recipeTabs" role="tablist">
-                <li class="nav-item" role="presentation">
-                  <button class="nav-link active" id="recipes-tab" data-bs-toggle="tab" data-bs-target="#recipes" type="button" role="tab">Recipes</button>
-                </li>
-                <li class="nav-item" role="presentation">
-                  <button class="nav-link" id="editor-tab" data-bs-toggle="tab" data-bs-target="#editor" type="button" role="tab">Editor</button>
-                </li>
+        <div class="col-12 col-xl-6">
+          <div class="card glass h-100">
+            <div class="card-header">
+              <ul class="nav nav-tabs card-header-tabs" role="tablist">
+                <li class="nav-item"><button class="nav-link active" data-bs-toggle="tab" data-bs-target="#tab-recipes" type="button" role="tab"><i class="fa-solid fa-book me-1"></i>Recipes</button></li>
+                <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-editor" type="button" role="tab"><i class="fa-solid fa-pen me-1"></i>Editor</button></li>
+                <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-suggest" type="button" role="tab"><i class="fa-solid fa-wand-magic-sparkles me-1"></i>Suggest</button></li>
               </ul>
             </div>
             <div class="card-body tab-content">
-              <div class="tab-pane fade show active" id="recipes" role="tabpanel" aria-labelledby="recipes-tab">
-                <div class="d-flex gap-2 mb-3">
-                  <input id="search" class="form-control" placeholder="Search recipes..." autocomplete="off">
-                  <button id="btn-new" class="btn btn-primary">New</button>
+              <div class="tab-pane fade show active" id="tab-recipes" role="tabpanel">
+                <div class="d-flex flex-wrap gap-2 mb-3 mobile-sticky-input">
+                  <input id="search" class="form-control" placeholder="Search recipes or ingredients..." autocomplete="off">
+                  <button id="btn-new" class="btn btn-primary"><i class="fa-solid fa-plus me-1"></i>New</button>
+                  <button id="btn-export" class="btn btn-outline-secondary"><i class="fa-solid fa-file-export me-1"></i>Export</button>
+                  <label class="btn btn-outline-secondary mb-0"><i class="fa-solid fa-file-import me-1"></i>Import <input id="importFile" type="file" accept="application/json" hidden></label>
                 </div>
                 <div id="recipesEmpty" class="text-muted small d-none">No recipes yet. Click New to add one.</div>
                 <div id="recipeList" class="list-group list-group-flush"></div>
-                <div class="d-flex gap-2 mt-3">
-                  <button id="btn-export" class="btn btn-outline-secondary btn-sm">Export</button>
-                  <label class="btn btn-outline-secondary btn-sm mb-0">
-                    Import <input id="importFile" type="file" accept="application/json" hidden>
-                  </label>
-                </div>
               </div>
-              <div class="tab-pane fade" id="editor" role="tabpanel" aria-labelledby="editor-tab">
+
+              <div class="tab-pane fade" id="tab-editor" role="tabpanel">
                 <form id="recipeForm" class="vstack gap-3">
                   <input type="hidden" id="recipeId">
                   <div>
@@ -59,46 +91,62 @@
                     <input id="title" class="form-control" required>
                   </div>
                   <div>
+                    <div class="d-flex align-items-center justify-content-between">
+                      <label class="form-label mb-0">Ingredients</label>
+                      <button id="btn-add-ingredient" type="button" class="btn btn-outline-primary btn-sm"><i class="fa-solid fa-plus"></i></button>
+                    </div>
+                    <div id="ingredients" class="vstack gap-2 mt-2 drop-target" data-drop="ingredients"></div>
+                    <div class="form-text">Drag pantry items here to add quickly.</div>
+                  </div>
+                  <div>
                     <label class="form-label">Steps</label>
                     <textarea id="steps" class="form-control" rows="5" placeholder="Write steps..." required></textarea>
                   </div>
-                  <div>
-                    <div class="d-flex align-items-center justify-content-between">
-                      <label class="form-label mb-0">Ingredients</label>
-                      <button id="btn-add-ingredient" type="button" class="btn btn-outline-primary btn-sm">Add</button>
-                    </div>
-                    <div id="ingredients" class="vstack gap-2 mt-2"></div>
-                  </div>
                   <div class="d-flex gap-2">
-                    <button class="btn btn-primary" type="submit">Save</button>
-                    <button id="btn-delete" class="btn btn-outline-danger ms-auto d-none" type="button">Delete</button>
+                    <button class="btn btn-primary" type="submit"><i class="fa-solid fa-floppy-disk me-1"></i>Save</button>
+                    <button id="btn-delete" class="btn btn-outline-danger ms-auto d-none" type="button"><i class="fa-solid fa-trash"></i></button>
                   </div>
                 </form>
+              </div>
+
+              <div class="tab-pane fade" id="tab-suggest" role="tabpanel">
+                <div class="small text-muted mb-2">Suggestions based on your pantry availability.</div>
+                <div id="suggestList" class="vstack gap-2"></div>
               </div>
             </div>
           </div>
         </div>
 
-        <div class="col-12 col-lg-6">
-          <div class="card shadow-sm h-100">
-            <div class="card-header bg-white d-flex align-items-center justify-content-between">
-              <span class="fw-semibold">Ambient Sound Mixer</span>
+        <div class="col-12 col-xl-6">
+          <div class="card glass h-100">
+            <div class="card-header d-flex align-items-center justify-content-between">
+              <div class="d-flex align-items-center gap-2"><i class="fa-solid fa-seedling text-success"></i><span class="fw-semibold">Pantry & Mixer</span></div>
               <div class="d-flex align-items-center gap-2">
-                <button id="btn-audio-toggle" class="btn btn-primary btn-sm">Play</button>
-                <div class="d-flex align-items-center gap-2">
+                <button id="btn-audio-toggle" class="btn btn-primary btn-sm"><i class="fa-solid fa-play"></i></button>
+                <div class="d-flex align-items-center gap-2 flex-wrap">
                   <label class="form-label mb-0 small">Master</label>
-                  <input id="masterGain" type="range" min="0" max="1" step="0.01" value="0.7">
+                  <input id="masterGain" type="range" min="0" max="1" step="0.01" value="0.7" style="min-width:160px;">
                 </div>
               </div>
             </div>
             <div class="card-body">
-              <div class="row g-3" id="mixerRows">
-                <!-- Mixer channels rendered here -->
-              </div>
-              <div class="d-flex gap-2 mt-3">
-                <button id="btn-save-mix" class="btn btn-outline-primary btn-sm">Save Mix</button>
-                <button id="btn-load-mix" class="btn btn-outline-secondary btn-sm">Load Mix</button>
-                <button id="btn-reset-mix" class="btn btn-outline-danger btn-sm">Reset</button>
+              <div class="row g-3">
+                <div class="col-12 col-lg-6">
+                  <div class="mb-2 d-flex gap-2 mobile-sticky-input">
+                    <input id="pantryInput" class="form-control" placeholder="Add pantry item">
+                    <button id="pantryAdd" class="btn btn-outline-primary" type="button"><i class="fa-solid fa-plus"></i></button>
+                  </div>
+                  <div id="pantryList" class="vstack gap-2" data-drop="pantry"></div>
+                  <div class="small text-muted mt-1">Drag to reorder; click to toggle availability.</div>
+                </div>
+                <div class="col-12 col-lg-6">
+                  <div class="row g-2" id="mixerRows"></div>
+                  <div class="d-flex gap-2 mt-2">
+                    <button id="btn-save-mix" class="btn btn-outline-primary btn-sm">Save Mix</button>
+                    <button id="btn-load-mix" class="btn btn-outline-secondary btn-sm">Load Mix</button>
+                    <button id="btn-reset-mix" class="btn btn-outline-danger btn-sm">Reset</button>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -111,10 +159,11 @@
         <span class="input-group-text p-0">
           <input class="form-check-input m-2 ingredient-have" type="checkbox" title="Have it?">
         </span>
+        <span class="input-group-text"><i class="fa-solid fa-grip"></i></span>
         <input class="form-control ingredient-name" placeholder="Name">
         <input class="form-control ingredient-qty" placeholder="Qty" style="max-width: 120px;">
         <input class="form-control ingredient-unit" placeholder="Unit" style="max-width: 120px;">
-        <button class="btn btn-outline-danger ingredient-remove" type="button">&times;</button>
+        <button class="btn btn-outline-danger ingredient-remove" type="button" title="Remove"><i class="fa-solid fa-xmark"></i></button>
       </div>
     </template>
 
@@ -129,9 +178,539 @@
       </button>
     </template>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
-    <script type="module" src="assets/js/db.js"></script>
-    <script type="module" src="assets/js/app.js"></script>
+    <template id="pantryPillTpl">
+      <div class="pill" draggable="true"><i class="fa-solid fa-grip"></i><span class="name"></span></div>
+    </template>
+
+    <div class="toast-container" id="toasts"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+    <script>
+    (function(){
+      'use strict';
+      const $ = (sel, root=document) => root.querySelector(sel);
+      const $$ = (sel, root=document) => Array.from(root.querySelectorAll(sel));
+
+      // Toast helper
+      function showToast(message, variant='primary'){
+        try{
+          const wrap = $('#toasts');
+          const el = document.createElement('div');
+          el.className = `toast align-items-center text-bg-${variant}`;
+          el.setAttribute('role','alert');
+          el.setAttribute('aria-live','assertive');
+          el.setAttribute('aria-atomic','true');
+          el.innerHTML = `<div class="d-flex"><div class="toast-body">${message}</div><button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button></div>`;
+          wrap.appendChild(el);
+          const t = new bootstrap.Toast(el, { delay: 2500 });
+          t.show();
+          el.addEventListener('hidden.bs.toast', () => el.remove());
+        }catch(e){ console.warn('Toast error', e); alert(message); }
+      }
+
+      // IndexedDB (pantry, recipes, presets)
+      const DB_NAME = 'chefwave';
+      const DB_VERSION = 2;
+      const STORES = { pantry: 'pantry', recipes: 'recipes', presets: 'presets' };
+      const SUPPORTS = {
+        indexedDB: typeof indexedDB !== 'undefined',
+        audio: typeof window.AudioContext !== 'undefined' || typeof window.webkitAudioContext !== 'undefined',
+        serviceWorker: 'serviceWorker' in navigator,
+      };
+
+      // Global error handling
+      window.addEventListener('error', (e)=>{ console.error('Unhandled error:', e.error || e.message); try{ showToast('An unexpected error occurred', 'danger'); }catch(_){} });
+      window.addEventListener('unhandledrejection', (e)=>{ console.error('Unhandled rejection:', e.reason); try{ showToast('A background task failed', 'danger'); }catch(_){} });
+
+      function openDb(){
+        return new Promise((resolve,reject)=>{
+          try{
+            const req = indexedDB.open(DB_NAME, DB_VERSION);
+            req.onupgradeneeded = () => {
+              const db = req.result;
+              if(!db.objectStoreNames.contains(STORES.pantry)){
+                const pantry = db.createObjectStore(STORES.pantry, { keyPath: 'id', autoIncrement: true });
+                pantry.createIndex('name', 'name', { unique: true });
+              }
+              if(!db.objectStoreNames.contains(STORES.recipes)){
+                const recipes = db.createObjectStore(STORES.recipes, { keyPath: 'id', autoIncrement: true });
+                recipes.createIndex('title', 'title', { unique: false });
+              }
+              if(!db.objectStoreNames.contains(STORES.presets)){
+                db.createObjectStore(STORES.presets);
+              }
+            };
+            req.onsuccess = () => resolve(req.result);
+            req.onerror = () => reject(req.error);
+          }catch(err){ reject(err); }
+        });
+      }
+
+      async function withStore(store, mode, fn){
+        const db = await openDb();
+        return await new Promise((resolve,reject)=>{
+          try{
+            const tx = db.transaction(store, mode);
+            const s = tx.objectStore(store);
+            const result = fn(s);
+            tx.oncomplete = () => resolve(result);
+            tx.onerror = () => reject(tx.error);
+            tx.onabort = () => reject(tx.error);
+          }catch(err){ reject(err); }
+        });
+      }
+
+      // LocalStorage fallback helpers
+      function lsGet(key, fallback){ try{ const v = localStorage.getItem(key); return v ? JSON.parse(v) : fallback; }catch(e){ console.warn('lsGet', e); return fallback; } }
+      function lsSet(key, val){ try{ localStorage.setItem(key, JSON.stringify(val)); }catch(e){ console.warn('lsSet', e); } }
+      const LS_KEYS = { pantry: 'chefwave_pantry', recipes: 'chefwave_recipes', presets: 'chefwave_presets' };
+
+      let Pantry, Recipes, Presets;
+      let USING_FALLBACK = false;
+
+      function makeFallbackAPIs(){
+        const pantryApi = {
+          async list(){ return lsGet(LS_KEYS.pantry, []); },
+          async add(name){ const list = lsGet(LS_KEYS.pantry, []); if(list.some(x=>x.name.toLowerCase()===name.toLowerCase())) throw new Error('exists'); const id=(list.at(-1)?.id||0)+1; list.push({ id, name, have:true }); lsSet(LS_KEYS.pantry, list); return id; },
+          async put(item){ const list = lsGet(LS_KEYS.pantry, []); const i=list.findIndex(x=>x.id===item.id); if(i>=0) list[i]=item; else list.push(item); lsSet(LS_KEYS.pantry, list); },
+          async del(id){ const list = lsGet(LS_KEYS.pantry, []); lsSet(LS_KEYS.pantry, list.filter(x=>x.id!==Number(id))); },
+        };
+        const recipesApi = {
+          async list(){ return lsGet(LS_KEYS.recipes, []); },
+          async get(id){ return lsGet(LS_KEYS.recipes, []).find(x=>x.id===Number(id)); },
+          async add(r){ const list = lsGet(LS_KEYS.recipes, []); const id=(list.at(-1)?.id||0)+1; r.id=id; list.push(r); lsSet(LS_KEYS.recipes, list); return id; },
+          async put(r){ const list = lsGet(LS_KEYS.recipes, []); const i=list.findIndex(x=>x.id===r.id); if(i>=0) list[i]=r; else list.push(r); lsSet(LS_KEYS.recipes, list); },
+          async del(id){ const list = lsGet(LS_KEYS.recipes, []); lsSet(LS_KEYS.recipes, list.filter(x=>x.id!==Number(id))); },
+        };
+        const presetsApi = {
+          async set(key,val){ const all = lsGet(LS_KEYS.presets, {}); all[key]=val; lsSet(LS_KEYS.presets, all); },
+          async get(key){ return lsGet(LS_KEYS.presets, {})[key]; },
+        };
+        return { pantryApi, recipesApi, presetsApi };
+      }
+
+      function enableFallback(){
+        if (USING_FALLBACK) return;
+        console.warn('Switching to localStorage fallback due to IndexedDB error');
+        const { pantryApi, recipesApi, presetsApi } = makeFallbackAPIs();
+        Pantry = pantryApi; Recipes = recipesApi; Presets = presetsApi;
+        USING_FALLBACK = true;
+      }
+      if (SUPPORTS.indexedDB) {
+        Pantry = {
+          list: async () => { try{ return await withStore(STORES.pantry, 'readonly', s => s.getAll()); }catch(e){ console.error(e); throw e; } },
+          add: async (name) => { try{ return await withStore(STORES.pantry, 'readwrite', s => s.add({ name, have: true })); }catch(e){ console.error(e); throw e; } },
+          put: async (item) => { try{ return await withStore(STORES.pantry, 'readwrite', s => s.put(item)); }catch(e){ console.error(e); throw e; } },
+          del: async (id) => { try{ return await withStore(STORES.pantry, 'readwrite', s => s.delete(Number(id))); }catch(e){ console.error(e); throw e; } },
+        };
+        Recipes = {
+          list: async () => { try{ return await withStore(STORES.recipes, 'readonly', s => s.getAll()); }catch(e){ console.error(e); throw e; } },
+          get: async (id) => { try{ return await withStore(STORES.recipes, 'readonly', s => s.get(Number(id))); }catch(e){ console.error(e); throw e; } },
+          add: async (r) => { try{ return await withStore(STORES.recipes, 'readwrite', s => s.add(r)); }catch(e){ console.error(e); throw e; } },
+          put: async (r) => { try{ return await withStore(STORES.recipes, 'readwrite', s => s.put(r)); }catch(e){ console.error(e); throw e; } },
+          del: async (id) => { try{ return await withStore(STORES.recipes, 'readwrite', s => s.delete(Number(id))); }catch(e){ console.error(e); throw e; } },
+        };
+        Presets = {
+          set: async (key, val) => { try{ return await withStore(STORES.presets, 'readwrite', s => s.put(val, key)); }catch(e){ console.error(e); throw e; } },
+          get: async (key) => { try{ return await withStore(STORES.presets, 'readonly', s => s.get(key)); }catch(e){ console.error(e); throw e; } },
+        };
+      } else {
+        console.warn('IndexedDB not supported; using localStorage fallback.');
+        const { pantryApi, recipesApi, presetsApi } = makeFallbackAPIs();
+        Pantry = pantryApi; Recipes = recipesApi; Presets = presetsApi; USING_FALLBACK = true;
+      }
+
+      // Backup
+      async function exportAll(){
+        try{
+          const [pantry, recipes] = await Promise.all([Pantry.list(), Recipes.list()]);
+          let presets = {};
+          if (typeof indexedDB !== 'undefined') {
+            presets = await withStore(STORES.presets, 'readonly', s => new Promise((res,rej)=>{
+              const data = {}; const cur = s.openCursor();
+              cur.onsuccess = (e)=>{ const c=e.target.result; if(c){ data[c.key]=c.value; c.continue(); } else res(data); };
+              cur.onerror = ()=>rej(cur.error);
+            }));
+          } else {
+            presets = lsGet(LS_KEYS.presets, {});
+          }
+          return { pantry, recipes, presets, meta: { exportedAt: new Date().toISOString(), v: DB_VERSION } };
+        }catch(e){ console.error('exportAll failed', e); throw e; }
+      }
+      async function importAll(data){
+        try{
+          if(!data||typeof data!=='object') return;
+          if (typeof indexedDB !== 'undefined') {
+            const db = await openDb();
+            await new Promise((resolve,reject)=>{
+              try{
+                const tx = db.transaction([STORES.pantry, STORES.recipes, STORES.presets], 'readwrite');
+                const p = tx.objectStore(STORES.pantry);
+                const r = tx.objectStore(STORES.recipes);
+                const s = tx.objectStore(STORES.presets);
+                p.clear(); r.clear(); s.clear();
+                (data.pantry||[]).forEach(i=>p.add(i));
+                (data.recipes||[]).forEach(i=>r.add(i));
+                Object.entries(data.presets||{}).forEach(([k,v])=>s.put(v,k));
+                tx.oncomplete=resolve; tx.onerror=()=>reject(tx.error); tx.onabort=()=>reject(tx.error);
+              }catch(err){ reject(err); }
+            });
+          } else {
+            lsSet(LS_KEYS.pantry, data.pantry||[]);
+            lsSet(LS_KEYS.recipes, data.recipes||[]);
+            lsSet(LS_KEYS.presets, data.presets||{});
+          }
+        }catch(e){ console.error('importAll failed', e); throw e; }
+      }
+
+      // UI elements
+      const els = {
+        btnInstall: $('#btn-install'), btnOffline: $('#btn-offline'),
+        search: $('#search'), btnNew: $('#btn-new'), recipesEmpty: $('#recipesEmpty'), list: $('#recipeList'),
+        itemTpl: $('#recipeItemTpl'), ingredientTpl: $('#ingredientRowTpl'), pantryTpl: $('#pantryPillTpl'),
+        form: $('#recipeForm'), formId: $('#recipeId'), title: $('#title'), steps: $('#steps'), ingredients: $('#ingredients'), btnAddIng: $('#btn-add-ingredient'), btnDelete: $('#btn-delete'),
+        btnExport: $('#btn-export'), importFile: $('#importFile'), suggestList: $('#suggestList'),
+        pantryInput: $('#pantryInput'), pantryAdd: $('#pantryAdd'), pantryList: $('#pantryList'),
+        mixerRows: $('#mixerRows'), btnAudioToggle: $('#btn-audio-toggle'), masterGainInput: $('#masterGain'), btnSaveMix: $('#btn-save-mix'), btnLoadMix: $('#btn-load-mix'), btnResetMix: $('#btn-reset-mix')
+      };
+
+      // Seed fake pantry data if empty
+      const DEFAULT_PANTRY = ['Salt','Black Pepper','Olive Oil','Garlic','Onion','Eggs','All-purpose Flour','Sugar','Butter','Milk','Tomatoes','Chicken Breast','Rice','Pasta','Basil'];
+      async function seedPantryIfEmpty(){
+        try{
+          const items = await Pantry.list();
+          if(!items || items.length === 0){
+            for(const name of DEFAULT_PANTRY){
+              try{ await Pantry.add(name); }catch(_){}
+            }
+          }
+        }catch(e){ console.warn('Seed pantry failed', e); }
+      }
+
+      // Pantry rendering & DnD
+      function renderPantryItem(item){
+        const pill = els.pantryTpl.content.firstElementChild.cloneNode(true);
+        pill.querySelector('.name').textContent = item.name;
+        pill.classList.toggle('text-decoration-line-through', !item.have);
+        pill.title = 'Drag to recipe or click to toggle availability';
+        pill.addEventListener('click', async ()=>{
+          try{ item.have = !item.have; await Pantry.put(item); renderPantry(); renderSuggestions(); }catch(e){ showToast('Failed to update pantry','danger'); }
+        });
+        pill.addEventListener('dragstart', (e)=>{
+          e.dataTransfer.setData('text/plain', item.name);
+          e.dataTransfer.effectAllowed = 'copy';
+        });
+        pill.dataset.id = item.id;
+        return pill;
+      }
+      async function renderPantry(){
+        try{
+          const items = (await Pantry.list()).sort((a,b)=>a.name.localeCompare(b.name));
+          els.pantryList.innerHTML = '';
+          items.forEach(i=>els.pantryList.appendChild(renderPantryItem(i)));
+        }catch(e){
+          console.error('renderPantry', e);
+          enableFallback();
+          try{
+            const items = (await Pantry.list()).sort((a,b)=>a.name.localeCompare(b.name));
+            els.pantryList.innerHTML = '';
+            items.forEach(i=>els.pantryList.appendChild(renderPantryItem(i)));
+          }catch(err){ console.error('renderPantry fallback failed', err); showToast('Failed to load pantry','danger'); }
+        }
+      }
+      els.pantryAdd.addEventListener('click', async ()=>{
+        const name = (els.pantryInput.value||'').trim();
+        if(!name) return;
+        try{ await Pantry.add(name); els.pantryInput.value=''; renderPantry(); renderSuggestions(); }
+        catch(e){ showToast('Item exists or cannot be added','warning'); }
+      });
+
+      // Drag & drop into editor ingredients
+      ['dragover','dragenter'].forEach(ev=>{
+        els.ingredients.addEventListener(ev, (e)=>{ e.preventDefault(); els.ingredients.classList.add('bg-light'); });
+      });
+      ['dragleave','drop'].forEach(ev=>{
+        els.ingredients.addEventListener(ev, (e)=>{ els.ingredients.classList.remove('bg-light'); });
+      });
+      els.ingredients.addEventListener('drop', (e)=>{
+        e.preventDefault();
+        const name = e.dataTransfer.getData('text/plain');
+        if(name) els.ingredients.appendChild(makeIngredientRow({ name }));
+      });
+
+      // Ingredient rows
+      function makeIngredientRow(data={}){
+        const node = els.ingredientTpl.content.firstElementChild.cloneNode(true);
+        node.querySelector('.ingredient-name').value = data.name||'';
+        node.querySelector('.ingredient-qty').value = data.qty||'';
+        node.querySelector('.ingredient-unit').value = data.unit||'';
+        node.querySelector('.ingredient-have').checked = !!data.have;
+        node.querySelector('.ingredient-remove').addEventListener('click', ()=> node.remove());
+        return node;
+      }
+      function collectIngredients(){
+        return $$('.ingredient-row', els.ingredients).map(row=>({
+          name: $('.ingredient-name', row).value.trim(),
+          qty: $('.ingredient-qty', row).value.trim(),
+          unit: $('.ingredient-unit', row).value.trim(),
+          have: $('.ingredient-have', row).checked,
+        })).filter(i=>i.name);
+      }
+
+      // Recipes list & search
+      let currentFilter = '';
+      function recipeItem(recipe){
+        const el = els.itemTpl.content.firstElementChild.cloneNode(true);
+        el.dataset.id = recipe.id;
+        $('.recipe-title', el).textContent = recipe.title;
+        const haveCount = (recipe.ingredients||[]).filter(i=>i.have).length;
+        const total = recipe.ingredients?.length || 0;
+        $('.recipe-count', el).textContent = `${haveCount}/${total}`;
+        $('.recipe-ingredients', el).textContent = (recipe.ingredients||[]).map(i=>`${i.qty||''}${i.unit?(' '+i.unit):''} ${i.name}`).join(', ');
+        $('.recipe-all-have', el).checked = total>0 && haveCount===total;
+        el.addEventListener('click', async (e)=>{
+          if(e.target.classList.contains('recipe-all-have')){
+            e.stopPropagation();
+            const updated = { ...recipe };
+            updated.ingredients = (updated.ingredients||[]).map(ing=>({ ...ing, have: e.target.checked }));
+            try{ await Recipes.put(updated); renderList(); renderSuggestions(); }catch(err){ showToast('Update failed','danger'); }
+            return;
+          }
+          openEditor(recipe.id);
+        });
+        return el;
+      }
+      async function renderList(){
+        try{
+          const recipes = await Recipes.list();
+          const filtered = recipes.filter(r => r.title.toLowerCase().includes(currentFilter) || (r.ingredients||[]).some(i=>i.name.toLowerCase().includes(currentFilter))).sort((a,b)=>a.title.localeCompare(b.title));
+          els.list.innerHTML = '';
+          els.recipesEmpty.classList.toggle('d-none', filtered.length>0);
+          filtered.forEach(r=>els.list.appendChild(recipeItem(r)));
+        }catch(e){
+          console.error('renderList', e);
+          enableFallback();
+          try{
+            const recipes = await Recipes.list();
+            const filtered = recipes.filter(r => r.title.toLowerCase().includes(currentFilter) || (r.ingredients||[]).some(i=>i.name.toLowerCase().includes(currentFilter))).sort((a,b)=>a.title.localeCompare(b.title));
+            els.list.innerHTML = '';
+            els.recipesEmpty.classList.toggle('d-none', filtered.length>0);
+            filtered.forEach(r=>els.list.appendChild(recipeItem(r)));
+          }catch(err){ console.error('renderList fallback failed', err); showToast('Failed to load recipes','danger'); }
+        }
+      }
+
+      async function openEditor(id){
+        try{
+          const r = id ? await Recipes.get(id) : { title:'', steps:'', ingredients:[] };
+          els.formId.value = r.id||'';
+          els.title.value = r.title||'';
+          els.steps.value = r.steps||'';
+          els.ingredients.innerHTML = '';
+          (r.ingredients||[]).forEach(ing=>els.ingredients.appendChild(makeIngredientRow(ing)));
+          els.btnDelete.classList.toggle('d-none', !r.id);
+          new bootstrap.Tab($('[data-bs-target="#tab-editor"]')).show();
+        }catch(e){ showToast('Failed to open editor','danger'); }
+      }
+      function clearEditor(){ els.formId.value=''; els.title.value=''; els.steps.value=''; els.ingredients.innerHTML=''; }
+
+      els.btnNew.addEventListener('click', ()=> openEditor(null));
+      els.btnAddIng.addEventListener('click', ()=> els.ingredients.appendChild(makeIngredientRow()));
+      els.search.addEventListener('input', (e)=>{ currentFilter = e.target.value.trim().toLowerCase(); renderList(); });
+      els.form.addEventListener('submit', async (e)=>{
+        e.preventDefault();
+        const payload = { id: els.formId.value?Number(els.formId.value):undefined, title: els.title.value.trim(), steps: els.steps.value.trim(), ingredients: collectIngredients() };
+        if(!payload.title) return;
+        try{ if(payload.id) await Recipes.put(payload); else await Recipes.add(payload); clearEditor(); new bootstrap.Tab($('[data-bs-target="#tab-recipes"]')).show(); renderList(); renderSuggestions(); showToast('Saved','success'); }
+        catch(err){ showToast('Save failed','danger'); }
+      });
+      els.btnDelete.addEventListener('click', async ()=>{
+        const id = Number(els.formId.value); if(!id) return;
+        try{ await Recipes.del(id); clearEditor(); new bootstrap.Tab($('[data-bs-target="#tab-recipes"]')).show(); renderList(); renderSuggestions(); showToast('Deleted','secondary'); }
+        catch(err){ showToast('Delete failed','danger'); }
+      });
+
+      // Suggestions
+      async function renderSuggestions(){
+        try{
+          const [pantry, recipes] = await Promise.all([Pantry.list(), Recipes.list()]);
+          const haveSet = new Set(pantry.filter(p=>p.have).map(p=>p.name.toLowerCase()));
+          const scored = recipes.map(r=>{
+            const ings = (r.ingredients||[]).map(i=>i.name.toLowerCase());
+            const required = new Set(ings);
+            let have=0; required.forEach(n=>{ if(haveSet.has(n)) have++; });
+            const total = Math.max(1, required.size);
+            const score = have/total; // 0..1
+            return { r, score, have, total };
+          }).sort((a,b)=> b.score - a.score || a.r.title.localeCompare(b.r.title));
+          els.suggestList.innerHTML = '';
+          scored.forEach(({r,score,have,total})=>{
+            const div = document.createElement('div');
+            div.className = 'd-flex align-items-center justify-content-between p-2 glass';
+            div.innerHTML = `<div><strong>${r.title}</strong><div class=\"small text-muted\">${have}/${total} ingredients in pantry</div></div><span class=\"badge ${score>0.99?'bg-success':score>0.5?'bg-primary':'bg-secondary'}\">${Math.round(score*100)}%</span>`;
+            div.addEventListener('click', ()=> openEditor(r.id));
+            els.suggestList.appendChild(div);
+          });
+        }catch(e){
+          console.error('renderSuggestions', e);
+          enableFallback();
+          try{
+            const [pantry, recipes] = await Promise.all([Pantry.list(), Recipes.list()]);
+            const haveSet = new Set(pantry.filter(p=>p.have).map(p=>p.name.toLowerCase()));
+            const scored = recipes.map(r=>{
+              const ings = (r.ingredients||[]).map(i=>i.name.toLowerCase());
+              const required = new Set(ings);
+              let have=0; required.forEach(n=>{ if(haveSet.has(n)) have++; });
+              const total = Math.max(1, required.size);
+              const score = have/total; return { r, score, have, total }; });
+            els.suggestList.innerHTML = '';
+            scored.sort((a,b)=> b.score - a.score || a.r.title.localeCompare(b.r.title)).forEach(({r,score,have,total})=>{
+              const div = document.createElement('div');
+              div.className = 'd-flex align-items-center justify-content-between p-2 glass';
+              div.innerHTML = `<div><strong>${r.title}</strong><div class=\"small text-muted\">${have}/${total} ingredients in pantry</div></div><span class=\"badge ${score>0.99?'bg-success':score>0.5?'bg-primary':'bg-secondary'}\">${Math.round(score*100)}%</span>`;
+              div.addEventListener('click', ()=> openEditor(r.id));
+              els.suggestList.appendChild(div);
+            });
+          }catch(err){ console.error('renderSuggestions fallback failed', err); showToast('Failed to compute suggestions','danger'); }
+        }
+      }
+
+      // Export / Import
+      els.btnExport.addEventListener('click', async ()=>{
+        try{
+          const data = await exportAll();
+          const blob = new Blob([JSON.stringify(data,null,2)], { type:'application/json' });
+          const url = URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download='chefwave-backup.json'; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+        }catch(e){ showToast('Export failed','danger'); }
+      });
+      els.importFile.addEventListener('change', async (e)=>{
+        const file = e.target.files?.[0]; if(!file) return;
+        try{ const text = await file.text(); const data = JSON.parse(text); await importAll(data); renderPantry(); renderList(); renderSuggestions(); showToast('Imported','success'); }
+        catch(err){ showToast('Invalid backup file','danger'); }
+        finally{ e.target.value=''; }
+      });
+
+      // Web Audio API Mixer
+      let audioCtx=null, masterGain=null, running=false;
+      const channelDefs = [
+        { key:'rain', label:'Rain', color:'#0d6efd' },
+        { key:'wind', label:'Wind', color:'#20c997' },
+        { key:'fire', label:'Fire', color:'#fd7e14' },
+        { key:'waves', label:'Waves', color:'#6f42c1' },
+        { key:'cafe', label:'Cafe', color:'#6c757d' },
+      ];
+      const mixerState = { master: 0.7, channels: Object.fromEntries(channelDefs.map(c=>[c.key,{gain:0.6, pan:0, filter:8000}])) };
+      const audioGraph = { channels: {} };
+
+      function ensureAudio(){
+        if(audioCtx) return;
+        audioCtx = new (window.AudioContext||window.webkitAudioContext)();
+        masterGain = audioCtx.createGain(); masterGain.gain.value = mixerState.master; masterGain.connect(audioCtx.destination);
+        channelDefs.forEach(def=>{
+          const gainNode = audioCtx.createGain();
+          const panNode = audioCtx.createStereoPanner();
+          const filterNode = audioCtx.createBiquadFilter(); filterNode.type='lowpass';
+          filterNode.frequency.value = mixerState.channels[def.key].filter;
+          gainNode.gain.value = mixerState.channels[def.key].gain; panNode.pan.value = mixerState.channels[def.key].pan;
+          filterNode.connect(panNode); panNode.connect(gainNode); gainNode.connect(masterGain);
+          audioGraph.channels[def.key] = { gainNode, panNode, filterNode, srcNodes: [] };
+        });
+      }
+      function createNoiseBuffer(type='white'){
+        const sr = 44100, len = sr*2; const buf = audioCtx.createBuffer(1,len,sr); const data = buf.getChannelData(0); let last=0;
+        for(let i=0;i<len;i++){ const white = Math.random()*2-1; if(type==='white') data[i]=white; else if(type==='pink'){ last = 0.997*last + 0.05*white; data[i]=last; } else { last=(last+0.02*white)/1.02; data[i]=last*3.5; } }
+        return buf;
+      }
+      function createChannelSource(key){ const src = audioCtx.createBufferSource(); const map={rain:'white', wind:'pink', fire:'brown', waves:'pink', cafe:'brown'}; src.buffer = createNoiseBuffer(map[key]||'white'); src.loop = true; return src; }
+      function startAudio(){ ensureAudio(); if(running) return; Object.keys(audioGraph.channels).forEach(key=>{ const ch=audioGraph.channels[key]; const src=createChannelSource(key); src.connect(ch.filterNode); src.start(); ch.srcNodes.push(src); }); running=true; }
+      function stopAudio(){ if(!running) return; Object.values(audioGraph.channels).forEach(ch=>{ ch.srcNodes.forEach(src=>{ try{ src.stop(); }catch(_){} }); ch.srcNodes=[]; }); running=false; }
+
+      function renderMixer(){
+        els.mixerRows.innerHTML='';
+        channelDefs.forEach(def=>{
+          const col = document.createElement('div'); col.className='col-12';
+          col.innerHTML = `
+            <div class="mixer-channel" style="border-color:${def.color}">
+              <div class="d-flex align-items-center justify-content-between mb-1">
+                <span class="fw-semibold" style="color:${def.color}">${def.label}</span>
+                <div class="small text-muted d-flex align-items-center gap-2">
+                  <span>Pan</span>
+                  <input type="range" class="form-range form-range-sm mixer-pan" min="-1" max="1" step="0.01" value="${mixerState.channels[def.key].pan}" style="width:120px">
+                </div>
+              </div>
+              <div class="row g-2 align-items-center">
+                <div class="col">
+                  <label class="form-label small mb-1">Gain</label>
+                  <input type="range" class="form-range mixer-gain" min="0" max="1" step="0.01" value="${mixerState.channels[def.key].gain}">
+                </div>
+                <div class="col">
+                  <label class="form-label small mb-1">Filter</label>
+                  <input type="range" class="form-range mixer-filter" min="200" max="12000" step="1" value="${mixerState.channels[def.key].filter}">
+                </div>
+              </div>
+            </div>`;
+          const row = col.firstElementChild;
+          const gainEl = row.querySelector('.mixer-gain'); const panEl = row.querySelector('.mixer-pan'); const filterEl = row.querySelector('.mixer-filter');
+          gainEl.addEventListener('input', (e)=>{ const v=Number(e.target.value); mixerState.channels[def.key].gain=v; if(audioCtx) audioGraph.channels[def.key]?.gainNode.gain.setTargetAtTime(v, audioCtx.currentTime, 0.01); });
+          panEl.addEventListener('input', (e)=>{ const v=Number(e.target.value); mixerState.channels[def.key].pan=v; if(audioCtx) audioGraph.channels[def.key].panNode.pan.value=v; });
+          filterEl.addEventListener('input', (e)=>{ const v=Number(e.target.value); mixerState.channels[def.key].filter=v; if(audioCtx) audioGraph.channels[def.key].filterNode.frequency.value=v; });
+          els.mixerRows.appendChild(col);
+        });
+      }
+      if(!SUPPORTS.audio){ els.btnAudioToggle.disabled = true; els.btnAudioToggle.title = 'Audio not supported'; }
+      els.btnAudioToggle.addEventListener('click', async ()=>{
+        try{
+          if(!audioCtx || audioCtx.state==='suspended'){ ensureAudio(); await audioCtx.resume(); }
+          if(running){ stopAudio(); els.btnAudioToggle.innerHTML = '<i class="fa-solid fa-play"></i>'; }
+          else { startAudio(); els.btnAudioToggle.innerHTML = '<i class="fa-solid fa-pause"></i>'; }
+        }catch(e){ showToast('Audio error','danger'); }
+      });
+      els.masterGainInput.addEventListener('input', (e)=>{ const v=Number(e.target.value); mixerState.master=v; if(masterGain) masterGain.gain.setTargetAtTime(v, audioCtx?.currentTime||0, 0.01); });
+      els.btnSaveMix.addEventListener('click', async ()=>{ try{ await Presets.set('mix', JSON.stringify(mixerState)); showToast('Mix saved','success'); }catch(e){ showToast('Failed to save mix','danger'); } });
+      els.btnLoadMix.addEventListener('click', async ()=>{ try{ const saved = await Presets.get('mix'); if(saved){ Object.assign(mixerState, JSON.parse(saved)); els.masterGainInput.value = mixerState.master; if(masterGain) masterGain.gain.value=mixerState.master; renderMixer(); } }catch(e){ showToast('Failed to load mix','danger'); } });
+      els.btnResetMix.addEventListener('click', ()=>{ mixerState.master=0.7; for(const k of Object.keys(mixerState.channels)){ mixerState.channels[k]={gain:0.6, pan:0, filter:8000}; } els.masterGainInput.value=mixerState.master; if(masterGain) masterGain.gain.value=mixerState.master; renderMixer(); });
+
+      // PWA: install + offline toggle + SW registration via Blob fallback
+      let deferredPrompt=null;
+      window.addEventListener('beforeinstallprompt', (e)=>{ e.preventDefault(); deferredPrompt=e; els.btnInstall.classList.remove('d-none'); });
+      els.btnInstall.addEventListener('click', async ()=>{ if(!deferredPrompt) return; deferredPrompt.prompt(); await deferredPrompt.userChoice; deferredPrompt=null; els.btnInstall.classList.add('d-none'); });
+      els.btnOffline.addEventListener('click', ()=>{ location.reload(); });
+
+      async function registerSW(){
+        if(!SUPPORTS.serviceWorker) { console.warn('Service Worker not supported'); return; }
+        try{
+          // Inline SW code (cache this HTML and CDNs)
+          const swCode = `const CACHE='chefwave-v2';const SHELL=['./','./index.html','https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css','https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js','https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css'];self.addEventListener('install',e=>{e.waitUntil(caches.open(CACHE).then(c=>c.addAll(SHELL)));self.skipWaiting();});self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k)))));self.clients.claim();});self.addEventListener('fetch',e=>{if(e.request.method!=='GET') return;const url=new URL(e.request.url);e.respondWith((async()=>{const cache=await caches.open(CACHE);const cached=await cache.match(e.request);try{const res=await fetch(e.request);if(url.origin===location.origin||/cdnjs|jsdelivr/.test(url.hostname)){cache.put(e.request,res.clone());}return res;}catch(_){return cached||new Response('Offline',{status:503});}})());});`;
+          const blob = new Blob([swCode], { type:'text/javascript' });
+          const swUrl = URL.createObjectURL(blob);
+          try{ await navigator.serviceWorker.register(swUrl); }
+          catch(_){ /* blob SW may be blocked; try static path as fallback */ try{ await navigator.serviceWorker.register('./sw.js'); }catch(__){ console.warn('Static SW registration failed'); } }
+        }catch(e){ console.warn('SW registration failed', e); }
+      }
+
+      // Manifest via Blob (best-effort)
+      (function addManifest(){
+        try{
+          const manifest = { name:'ChefWave — Recipes • Pantry • Mixer', short_name:'ChefWave', start_url:'./', display:'standalone', background_color:'#ffffff', theme_color:'#0d6efd', icons:[{src:'data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 64 64%22><rect width=%2264%22 height=%2264%22 rx=%2212%22 fill=%22%230d6efd%22/><g fill=%22%23fff%22><path d=%22M20 22h24v4H20z%22/><path d=%22M24 26h4v16h-4zM36 26h4v12h-4zM30 26h4v10h-4z%22/><circle cx=%2248%22 cy=%2220%22 r=%224%22/></g></svg>', sizes:'any', type:'image/svg+xml'}] };
+          const blob = new Blob([JSON.stringify(manifest)], { type:'application/manifest+json' });
+          const url = URL.createObjectURL(blob); const link=document.createElement('link'); link.rel='manifest'; link.href=url; document.head.appendChild(link);
+        }catch(e){ /* ignore */ }
+      })();
+
+      // Init
+      document.addEventListener('DOMContentLoaded', async ()=>{
+        try{
+          if (typeof indexedDB !== 'undefined') { try{ await openDb(); }catch(e){ console.error('DB open failed', e); } }
+          await seedPantryIfEmpty();
+          await renderPantry();
+          await renderList();
+          await renderSuggestions();
+          await registerSW();
+          renderMixer(); els.masterGainInput.value=mixerState.master;
+        }catch(e){ console.error('Initialization error', e); showToast('Initialization error','danger'); }
+      });
+    })();
+    </script>
   </body>
   </html>
 

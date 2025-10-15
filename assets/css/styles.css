@@ -1,0 +1,18 @@
+/* Theme tweaks */
+.card { border: none; }
+.card-header { border-bottom: 1px solid rgba(0,0,0,0.075); }
+.list-group-item { border: 1px solid rgba(0,0,0,0.05); }
+
+/* Editor */
+.ingredient-row .form-control { min-width: 0; }
+.ingredient-row .ingredient-name { flex: 2 1 auto; }
+
+/* Mixer */
+.mixer-channel { border: 1px dashed rgba(0,0,0,0.12); border-radius: .5rem; padding: .75rem; }
+.mixer-slider { width: 100%; }
+.mixer-label { font-weight: 600; }
+
+/* Utilities */
+.d-none { display: none !important; }
+
+

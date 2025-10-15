@@ -381,6 +381,50 @@
 
       // Seed fake pantry data if empty
       const DEFAULT_PANTRY = ['Salt','Black Pepper','Olive Oil','Garlic','Onion','Eggs','All-purpose Flour','Sugar','Butter','Milk','Tomatoes','Chicken Breast','Rice','Pasta','Basil'];
+      const DEFAULT_RECIPES = [
+        {
+          title: 'Garlic Butter Pasta',
+          steps: 'Cook pasta until al dente. Melt butter with minced garlic. Toss pasta with garlic butter, a splash of pasta water, and black pepper. Finish with parsley.',
+          ingredients: [
+            { name: 'Pasta', qty: '250', unit: 'g', have: false },
+            { name: 'Butter', qty: '2', unit: 'tbsp', have: false },
+            { name: 'Garlic', qty: '3', unit: 'cloves', have: false },
+            { name: 'Black Pepper', qty: '1/2', unit: 'tsp', have: false }
+          ]
+        },
+        {
+          title: 'Tomato Basil Omelette',
+          steps: 'Beat eggs with salt. Cook in butter, add diced tomatoes and torn basil, fold and finish.',
+          ingredients: [
+            { name: 'Eggs', qty: '3', unit: 'pieces', have: false },
+            { name: 'Butter', qty: '1', unit: 'tbsp', have: false },
+            { name: 'Tomatoes', qty: '1', unit: 'medium', have: false },
+            { name: 'Basil', qty: '5', unit: 'leaves', have: false }
+          ]
+        },
+        {
+          title: 'Simple Fried Rice',
+          steps: 'Sauté garlic and onions. Add rice, soy sauce, and scrambled egg; stir-fry until hot.',
+          ingredients: [
+            { name: 'Rice', qty: '2', unit: 'cups (cooked)', have: false },
+            { name: 'Garlic', qty: '2', unit: 'cloves', have: false },
+            { name: 'Onion', qty: '1/2', unit: 'piece', have: false },
+            { name: 'Eggs', qty: '1', unit: 'piece', have: false },
+            { name: 'Soy Sauce', qty: '1', unit: 'tbsp', have: false }
+          ]
+        },
+        {
+          title: 'Herbed Chicken',
+          steps: 'Season chicken with salt, pepper, and basil. Pan-sear in olive oil until cooked.',
+          ingredients: [
+            { name: 'Chicken Breast', qty: '400', unit: 'g', have: false },
+            { name: 'Olive Oil', qty: '1', unit: 'tbsp', have: false },
+            { name: 'Salt', qty: '1/2', unit: 'tsp', have: false },
+            { name: 'Black Pepper', qty: '1/4', unit: 'tsp', have: false },
+            { name: 'Basil', qty: '1', unit: 'tsp (dried)', have: false }
+          ]
+        }
+      ];
       async function seedPantryIfEmpty(){
         try{
           const items = await Pantry.list();
@@ -390,6 +434,15 @@
             }
           }
         }catch(e){ console.warn('Seed pantry failed', e); }
+      }
+
+      async function seedRecipesIfEmpty(){
+        try{
+          const items = await Recipes.list();
+          if(!items || items.length === 0){
+            for(const r of DEFAULT_RECIPES){ try{ await Recipes.add(r); }catch(_){ } }
+          }
+        }catch(e){ console.warn('Seed recipes failed', e); }
       }
 
       // Pantry rendering & DnD
@@ -712,6 +765,7 @@
             enableFallback();
           }
           await seedPantryIfEmpty();
+          await seedRecipesIfEmpty();
           await renderPantry();
           await renderList();
           await renderSuggestions();

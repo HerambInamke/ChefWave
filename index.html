@@ -12,18 +12,19 @@
         --glass-bg: rgba(255,255,255,0.6);
         --glass-br: 16px;
         --glass-blur: 10px;
-        /* Branding palette */
-        --color-primary: #708238; /* Olive Green */
-        --color-accent: #8B5E3C; /* Warm Brown */
-        --color-bg: #F4EDE1; /* Beige Cream */
-        --color-card: #EFE8D8; /* Pale Sand */
-        --color-text: #2E2E2E; /* Dark Charcoal */
-        --color-highlight: #B6864B; /* Button/Highlight */
-        --color-accent-2: #A7B99E; /* Soft Sage */
+        /* Café Mocha & Cream palette */
+        --color-primary: #6B4F3A; /* Mocha Brown */
+        --color-accent: #D6A77A; /* Soft Caramel */
+        --color-bg: #FDF7F2; /* Cream White */
+        /* Derive card color by softly warming the cream with caramel */
+        --color-card: color-mix(in srgb, var(--color-bg) 85%, var(--color-accent) 15%);
+        --color-text: #2C2C2C; /* Deep Espresso */
+        --color-highlight: #8C7158; /* Button Hover / Accent 2 */
+        --color-accent-2: #A3A380; /* Muted Olive */
       }
       body { min-height: 100vh; color: var(--color-text); background: radial-gradient(1200px 800px at 10% 10%, var(--color-bg), #ffffff) fixed; }
       .glass { background: var(--glass-bg); border-radius: var(--glass-br); backdrop-filter: blur(var(--glass-blur)); border: 1px solid rgba(255,255,255,0.4); box-shadow: 0 10px 30px rgba(0,0,0,0.08); }
-      .navbar.glass { background: color-mix(in srgb, var(--color-primary) 85%, #000 0%) !important; backdrop-filter: blur(12px); }
+      .navbar.glass { background: color-mix(in srgb, var(--color-primary) 92%, #000 0%) !important; backdrop-filter: blur(12px); }
       .navbar .btn-outline-light { --bs-btn-color: #fff; --bs-btn-border-color: color-mix(in srgb, #fff 40%, transparent); }
       .card { border: 0; }
       .card-header { background: transparent; border-bottom: 1px solid rgba(0,0,0,0.06); color: var(--color-text); }

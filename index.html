@@ -36,6 +36,8 @@
       .pill { display: inline-flex; align-items: center; gap:.5rem; padding: .35rem .6rem; border-radius: 999px; background: color-mix(in srgb, var(--color-primary) 10%, #fff); border: 1px solid color-mix(in srgb, var(--color-primary) 25%, #fff); }
       .pill .fa-grip { cursor: grab; color: var(--color-primary); }
       .mixer-channel { border: 1px dashed color-mix(in srgb, var(--color-accent-2) 40%, transparent); border-radius: .75rem; padding: .75rem; background: var(--color-card); }
+      .mixer-channel .control-label { font-weight: 600; color: var(--color-text); }
+      .mixer-channel .control-row { margin-bottom: .25rem; }
       .toast-container { position: fixed; right: 1rem; bottom: 1rem; z-index: 1080; }
 
       /* Modern mobile-first typography and motion */
@@ -777,31 +779,40 @@ const DEFAULT_RECIPES = [
         els.mixerRows.innerHTML='';
         channelDefs.forEach(def=>{
           const col = document.createElement('div'); col.className='col-12';
+          const state = mixerState.channels[def.key];
           col.innerHTML = `
             <div class="mixer-channel" style="border-color:${def.color}">
-              <div class="d-flex align-items-center justify-content-between mb-1">
+              <div class="d-flex align-items-center justify-content-between mb-2">
                 <span class="fw-semibold" style="color:${def.color}">${def.label}</span>
-                <div class="small text-muted d-flex align-items-center gap-2">
-                  <span>Pan</span>
-                  <input type="range" class="form-range form-range-sm mixer-pan" min="-1" max="1" step="0.01" value="${mixerState.channels[def.key].pan}" style="width:120px">
-                </div>
               </div>
-              <div class="row g-2 align-items-center">
-                <div class="col">
-                  <label class="form-label small mb-1">Gain</label>
-                  <input type="range" class="form-range mixer-gain" min="0" max="1" step="0.01" value="${mixerState.channels[def.key].gain}">
+              <div class="vstack gap-2">
+                <div class="control-row d-flex align-items-center justify-content-between">
+                  <span class="small text-muted control-label">Pan</span>
+                  <span class="badge bg-light text-dark mixer-pan-val">${state.pan.toFixed(2)}</span>
                 </div>
-                <div class="col">
-                  <label class="form-label small mb-1">Filter</label>
-                  <input type="range" class="form-range mixer-filter" min="200" max="12000" step="1" value="${mixerState.channels[def.key].filter}">
+                <input type="range" class="form-range form-range-sm mixer-pan" min="-1" max="1" step="0.01" value="${state.pan}">
+
+                <div class="control-row d-flex align-items-center justify-content-between">
+                  <span class="small text-muted control-label">Gain</span>
+                  <span class="badge bg-light text-dark mixer-gain-val">${state.gain.toFixed(2)}</span>
                 </div>
+                <input type="range" class="form-range mixer-gain" min="0" max="1" step="0.01" value="${state.gain}">
+
+                <div class="control-row d-flex align-items-center justify-content-between">
+                  <span class="small text-muted control-label">Filter</span>
+                  <span class="badge bg-light text-dark mixer-filter-val">${Math.round(state.filter)} Hz</span>
+                </div>
+                <input type="range" class="form-range mixer-filter" min="200" max="12000" step="1" value="${state.filter}">
               </div>
             </div>`;
           const row = col.firstElementChild;
           const gainEl = row.querySelector('.mixer-gain'); const panEl = row.querySelector('.mixer-pan'); const filterEl = row.querySelector('.mixer-filter');
-          gainEl.addEventListener('input', (e)=>{ const v=Number(e.target.value); mixerState.channels[def.key].gain=v; if(audioCtx) audioGraph.channels[def.key]?.gainNode.gain.setTargetAtTime(v, audioCtx.currentTime, 0.01); });
-          panEl.addEventListener('input', (e)=>{ const v=Number(e.target.value); mixerState.channels[def.key].pan=v; if(audioCtx) audioGraph.channels[def.key].panNode.pan.value=v; });
-          filterEl.addEventListener('input', (e)=>{ const v=Number(e.target.value); mixerState.channels[def.key].filter=v; if(audioCtx) audioGraph.channels[def.key].filterNode.frequency.value=v; });
+          const panVal = row.querySelector('.mixer-pan-val');
+          const gainVal = row.querySelector('.mixer-gain-val');
+          const filterVal = row.querySelector('.mixer-filter-val');
+          gainEl.addEventListener('input', (e)=>{ const v=Number(e.target.value); mixerState.channels[def.key].gain=v; if(audioCtx) audioGraph.channels[def.key]?.gainNode.gain.setTargetAtTime(v, audioCtx.currentTime, 0.01); if(gainVal) gainVal.textContent = v.toFixed(2); });
+          panEl.addEventListener('input', (e)=>{ const v=Number(e.target.value); mixerState.channels[def.key].pan=v; if(audioCtx) audioGraph.channels[def.key].panNode.pan.value=v; if(panVal) panVal.textContent = v.toFixed(2); });
+          filterEl.addEventListener('input', (e)=>{ const v=Number(e.target.value); mixerState.channels[def.key].filter=v; if(audioCtx) audioGraph.channels[def.key].filterNode.frequency.value=v; if(filterVal) filterVal.textContent = `${Math.round(v)} Hz`; });
           els.mixerRows.appendChild(col);
         });
       }

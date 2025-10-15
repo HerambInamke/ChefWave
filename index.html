@@ -8,19 +8,32 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet" crossorigin="anonymous">
     <style>
-      :root { --glass-bg: rgba(255,255,255,0.6); --glass-br: 16px; --glass-blur: 10px; }
-      body { min-height: 100vh; background: radial-gradient(1200px 800px at 10% 10%, #e8f1ff, #ffffff) fixed; }
-      .glass { background: var(--glass-bg); border-radius: var(--glass-br); backdrop-filter: blur(var(--glass-blur)); border: 1px solid rgba(255,255,255,0.4); box-shadow: 0 10px 30px rgba(13,110,253,0.08); }
-      .navbar.glass { background: rgba(13,110,253,0.8)!important; backdrop-filter: blur(12px); }
+      :root {
+        --glass-bg: rgba(255,255,255,0.6);
+        --glass-br: 16px;
+        --glass-blur: 10px;
+        /* Branding palette */
+        --color-primary: #708238; /* Olive Green */
+        --color-accent: #8B5E3C; /* Warm Brown */
+        --color-bg: #F4EDE1; /* Beige Cream */
+        --color-card: #EFE8D8; /* Pale Sand */
+        --color-text: #2E2E2E; /* Dark Charcoal */
+        --color-highlight: #B6864B; /* Button/Highlight */
+        --color-accent-2: #A7B99E; /* Soft Sage */
+      }
+      body { min-height: 100vh; color: var(--color-text); background: radial-gradient(1200px 800px at 10% 10%, var(--color-bg), #ffffff) fixed; }
+      .glass { background: var(--glass-bg); border-radius: var(--glass-br); backdrop-filter: blur(var(--glass-blur)); border: 1px solid rgba(255,255,255,0.4); box-shadow: 0 10px 30px rgba(0,0,0,0.08); }
+      .navbar.glass { background: color-mix(in srgb, var(--color-primary) 85%, #000 0%) !important; backdrop-filter: blur(12px); }
+      .navbar .btn-outline-light { --bs-btn-color: #fff; --bs-btn-border-color: color-mix(in srgb, #fff 40%, transparent); }
       .card { border: 0; }
-      .card-header { background: transparent; border-bottom: 1px solid rgba(0,0,0,0.06); }
-      .list-group-item { border: 1px solid rgba(0,0,0,0.05); }
+      .card-header { background: transparent; border-bottom: 1px solid rgba(0,0,0,0.06); color: var(--color-text); }
+      .list-group-item { border: 1px solid rgba(0,0,0,0.05); background: var(--color-card); color: var(--color-text); }
       .ingredient-row .form-control { min-width: 0; }
       .ingredient-row .ingredient-name { flex: 2 1 auto; }
-      .drop-target { border: 2px dashed rgba(13,110,253,.35); border-radius: .5rem; padding: .5rem; }
-      .pill { display: inline-flex; align-items: center; gap:.5rem; padding: .35rem .6rem; border-radius: 999px; background: rgba(13,110,253,.08); border: 1px solid rgba(13,110,253,.15); }
-      .pill .fa-grip { cursor: grab; color:#0d6efd; }
-      .mixer-channel { border: 1px dashed rgba(0,0,0,0.12); border-radius: .75rem; padding: .75rem; }
+      .drop-target { border: 2px dashed color-mix(in srgb, var(--color-primary) 45%, transparent); border-radius: .5rem; padding: .5rem; }
+      .pill { display: inline-flex; align-items: center; gap:.5rem; padding: .35rem .6rem; border-radius: 999px; background: color-mix(in srgb, var(--color-primary) 10%, #fff); border: 1px solid color-mix(in srgb, var(--color-primary) 25%, #fff); }
+      .pill .fa-grip { cursor: grab; color: var(--color-primary); }
+      .mixer-channel { border: 1px dashed color-mix(in srgb, var(--color-accent-2) 40%, transparent); border-radius: .75rem; padding: .75rem; background: var(--color-card); }
       .toast-container { position: fixed; right: 1rem; bottom: 1rem; z-index: 1080; }
 
       /* Modern mobile-first typography and motion */
@@ -33,24 +46,26 @@
       /* Card polish: rounded corners, subtle shadow, hover lift */
       .rounded-4 { border-radius: 12px !important; }
       .hover-lift { transition: transform .18s ease, box-shadow .18s ease; }
-      .hover-lift:hover { transform: translateY(-2px); box-shadow: 0 10px 26px rgba(13,110,253,.12); }
+      .hover-lift:hover { transform: translateY(-2px); box-shadow: 0 10px 26px color-mix(in srgb, var(--color-primary) 25%, rgba(0,0,0,.12)); }
       .shadow-soft { box-shadow: 0 6px 18px rgba(0,0,0,0.06); }
-      .card .card-body { padding: 1rem; }
+      .card .card-body { padding: 1rem; background: var(--color-card); color: var(--color-text); }
       @media (min-width: 576px) { .card .card-body { padding: 1.25rem; } }
 
       /* Responsive images inside cards */
       .card-img-top { width: 100%; height: auto; object-fit: cover; border-top-left-radius: inherit; border-top-right-radius: inherit; }
 
-      /* Flip card (Uiverse-inspired) */
+      /* Flip card (palette themed) */
       .flip-card { background-color: transparent; width: 100%; height: 220px; perspective: 1000px; }
       @media (min-width: 768px) { .flip-card { height: 260px; } }
-      .flip-card .title { font-size: 1.2rem; font-weight: 800; text-align: center; margin: 0; }
+      .flip-card .title { font-size: 1.2rem; font-weight: 800; text-align: center; margin: 0; color: var(--color-text); }
       .flip-card-inner { position: relative; width: 100%; height: 100%; text-align: center; transition: transform 0.8s; transform-style: preserve-3d; }
       .flip-card:hover .flip-card-inner { transform: rotateY(180deg); }
-      .flip-card-front, .flip-card-back { box-shadow: 0 8px 14px 0 rgba(0,0,0,0.12); position: absolute; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: .5rem; width: 100%; height: 100%; -webkit-backface-visibility: hidden; backface-visibility: hidden; border: 1px solid coral; border-radius: 1rem; padding: 1rem; }
-      .flip-card-front { background: linear-gradient(120deg, bisque 60%, rgb(255, 231, 222) 88%, rgb(255, 211, 195) 40%, rgba(255, 127, 80, 0.603) 48%); color: coral; }
-      .flip-card-back { background: linear-gradient(120deg, rgb(255, 174, 145) 30%, coral 88%, bisque 40%, rgb(255, 185, 160) 78%); color: #fff; transform: rotateY(180deg); }
+      .flip-card-front, .flip-card-back { box-shadow: 0 8px 14px 0 rgba(0,0,0,0.12); position: absolute; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: .5rem; width: 100%; height: 100%; -webkit-backface-visibility: hidden; backface-visibility: hidden; border: 1px solid var(--color-accent); border-radius: 1rem; padding: 1rem; }
+      .flip-card-front { background: linear-gradient(135deg, var(--color-card) 55%, color-mix(in srgb, var(--color-accent-2) 20%, var(--color-card)) 100%); color: var(--color-primary); }
+      .flip-card-back { background: linear-gradient(135deg, color-mix(in srgb, var(--color-accent) 85%, var(--color-highlight)) 0%, var(--color-accent) 70%); color: #fff; transform: rotateY(180deg); }
       .flip-card .recipe-ingredients { max-width: 90%; margin: 0 auto; }
+      .btn-brand { --bs-btn-bg: var(--color-highlight); --bs-btn-border-color: var(--color-highlight); --bs-btn-hover-bg: color-mix(in srgb, var(--color-highlight) 85%, #000); --bs-btn-hover-border-color: color-mix(in srgb, var(--color-highlight) 85%, #000); --bs-btn-color: #fff; }
+      .badge-brand { background-color: var(--color-primary); color: #fff; }
 
       /* Mobile-first responsiveness */
       @media (max-width: 576px) {
@@ -203,12 +218,12 @@
             <div class="flip-card-front">
               <p class="title recipe-title"></p>
               <p class="small text-muted recipe-ingredients"></p>
-              <span class="badge bg-secondary recipe-count"></span>
+              <span class="badge badge-brand recipe-count"></span>
             </div>
             <div class="flip-card-back">
               <p class="title mb-1">Details</p>
               <p class="mb-2"><span class="badge bg-light text-dark recipe-count"></span></p>
-              <button type="button" class="btn btn-light btn-sm open-editor">Open</button>
+              <button type="button" class="btn btn-brand btn-sm open-editor">Open</button>
               <div class="form-check mt-2">
                 <input class="form-check-input recipe-all-have" type="checkbox" id="allHaveTpl">
                 <label class="form-check-label" for="allHaveTpl">Mark all have</label>
